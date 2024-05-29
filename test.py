@@ -1,46 +1,51 @@
-def chinese_to_number(chinese_amount):
-    """
-    将大写中文金额转换为数字
+def chinese_to_numerals(chinese_str):
+    chinese_numerals = {'零': 0, '壹': 1, '贰': 2, '叁': 3, '肆': 4,
+                        '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9}
+    chinese_units = {'圆': 1, '角': 0.1, '分': 0.01}
 
-    参数:
-    chinese_amount (str): 大写中文金额字符串
+    num = 0
+    temp = 0  # 临时存储中间结果
 
-    返回:
-    float: 转换后的数字金额
-    """
-    # 中文金额数字映射表
-    mapping = {
-        '零': 0, '壹': 1, '贰': 2, '叁': 3, '肆': 4,
-        '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9,
-        '拾': 10, '佰': 100, '仟': 1000, '万': 10000, '亿': 100000000
-    }
+    for char in chinese_str:
+        if char in chinese_units:
+            unit = chinese_units[char]
+            num += temp * unit
+            temp = 0
+        elif char in chinese_numerals:
+            temp += chinese_numerals[char]
+        elif char == '拾':
+            temp *= 10
+        elif char == '佰':
+            temp *= 100
+        elif char == '仟':
+            temp *= 1000
+        elif char == '万':
+            temp *= 10000
+        elif char == '亿':
+            temp *= 100000000
 
-    # 初始化结果
-    result = 0
-    unit = 1
-    decimal_part = 0
-    decimal_unit = 0.1
-
-    # 遍历中文金额字符串
-    for i, char in enumerate(chinese_amount[::-1]):
-        if char in mapping:
-            if mapping[char] >= 10:
-                result = result + unit * mapping[char]
-                unit = mapping[char]
-            else:
-                if i == 0:  # 处理分
-                    decimal_part += mapping[char] * decimal_unit
-                else:
-                    result = result + unit * mapping[char]
-        elif char == '圆':
-            pass
-        elif char == '角':
-            result = result + decimal_part
-            decimal_part = 0
-            decimal_unit = 0.01
-
-    return result + decimal_part
+    return num
 
 
-print(chinese_to_number('贰拾肆圆零柒分'))  # 输出: 24.07
-print(chinese_to_number('壹佰贰拾叁圆肆角伍分'))  # 输出: 123.45
+# 测试
+chinese_amount = '贰拾肆圆零柒分'
+print(chinese_to_numerals(chinese_amount))
+
+
+# 增加更多测试用例
+additional_test_data = [
+    '壹圆壹角壹分',
+    '壹仟圆',
+    '壹佰万圆',
+    '壹佰亿圆',
+    '壹佰亿零壹圆',
+    '壹仟零壹圆',
+    '壹拾圆壹角',
+    '贰佰圆贰拾分',
+    '叁仟伍佰陆拾柒圆捌角零分',
+    '肆佰零伍圆'
+]
+
+additional_results = [(data, chinese_to_numerals(data)) for data in additional_test_data]
+
+print(additional_results)

@@ -76,34 +76,31 @@ def find_chinese_currency(text):
     return rs
 
 
-def parse_chinese_amount(amount_str):
-    """
-    将中文金额字符串转换为数字
-    """
-    # 中文数字到阿拉伯数字的映射
-    chinese_digits = {
-        '零': 0, '壹': 1, '贰': 2, '叁': 3, '肆': 4,
-        '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9
-    }
+def chinese_to_numerals(chinese_str):
+    chinese_numerals = {'零': 0, '壹': 1, '贰': 2, '叁': 3, '肆': 4,
+                        '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9}
+    chinese_units = {'圆': 1, '角': 0.1, '分': 0.01}
 
-    # 中文单位到阿拉伯单位的映射
-    chinese_units = {
-        '': 1, '十': 10, '百': 100, '千': 1000,
-        '万': 10000, '亿': 100000000
-    }
+    num = 0
+    temp = 0  # 临时存储中间结果
 
-    total = 0
-    unit = 1
-    for char in reversed(amount_str):
-        if char in chinese_digits:
-            total += chinese_digits[char] * unit
-        elif char in chinese_units:
-            unit *= chinese_units[char]
-        elif char == '点':
-            unit = 1
+    for char in chinese_str:
+        if char in chinese_units:
+            unit = chinese_units[char]
+            num += temp * unit
+            temp = 0
+        elif char in chinese_numerals:
+            temp += chinese_numerals[char]
+        elif char == '拾':
+            temp *= 10
+        elif char == '佰':
+            temp *= 100
+        elif char == '仟':
+            temp *= 1000
+        elif char == '万':
+            temp *= 10000
+        elif char == '亿':
+            temp *= 100000000
 
-    return total
-
-
-
+    return num
 
