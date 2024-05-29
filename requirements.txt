@@ -22,3 +22,4 @@ opencv-python-headless
 opencv-contrib-python-headless
 
 
+requests

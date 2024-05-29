@@ -1,12 +1,11 @@
-import os
 from decimal import Decimal
 
-import fitz  # PyMuPDF
-
 import cv2  # opencv包
+import fitz  # PyMuPDF
+import requests
+
 
 import consts
-from parse_pdf import parse_pdf
 
 
 def pdf_to_img(file_path):
@@ -44,6 +43,14 @@ def read_qr_code(img_path):
     res, _ = detector.detectAndDecode(img)
     if res is None or len(res) == 0:
         return None
+
+    # 深圳电子发票
+    if res[0].startswith("https://bcfp.shenzhen.chinatax.gov.cn"):
+        url = res[0]
+        print(url)
+
+        return parse_shenzhen(url)
+
     res = res[0].split(',')
     if res[0] != '01':  # 第1个属性值，固定01
         raise ValueError("发票二维码第一个应该是固定01")
@@ -62,3 +69,8 @@ def read_qr_code(img_path):
 
 
 
+def parse_shenzhen(url):
+
+    response = requests.get(url,verify=False)
+    print(response.text)
+    return {}
