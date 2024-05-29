@@ -33,7 +33,7 @@ def upload():
         info['文件名称'] = file.filename
         list.append(info)
 
-
+    print(list)
 
 
     return render_template("result.html",
