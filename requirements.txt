@@ -1,0 +1,22 @@
+Flask
+flask-cors
+pandas
+pytz
+
+pymongo
+
+
+pdfplumber
+
+openpyxl
+
+PyMuPDF
+
+
+# opencv 二维码识别
+#opencv-python
+#opencv-contrib-python
+
+# 服务器模式，没有界面
+opencv-python-headless
+opencv-contrib-python-headless

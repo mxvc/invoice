@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>发票解析工具</title>
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css"/>
+
+</head>
+<body>
+
+<div align="center" style="margin-bottom: 48px">
+    <h3>发票解析结果</h3>
+</div>
+<div id="example"></div>
+
+
+<script>
+    const container = document.querySelector('#example');
+    const data = {{ data|safe }};
+    const cols = {{ cols|safe}}
+
+    const hot = new Handsontable(container, {
+        data,
+        colHeaders: cols,
+        columns: cols.map(c => ({data: c})),
+        height: 'auto',
+        width: 'auto',
+        autoWrapRow: true,
+        autoWrapCol: true,
+        licenseKey: 'non-commercial-and-evaluation'
+    });
+</script>
+
+
+</body>
+</html>
