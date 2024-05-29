@@ -15,6 +15,8 @@ app.json.ensure_ascii = False  # 解决中文乱码问题
 
 @app.route('/')
 def home():
+    ip = request.remote_addr
+    print('请求首页', ip)
     return render_template("index.html")
 
 
