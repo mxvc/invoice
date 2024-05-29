@@ -14,4 +14,4 @@ def parse_pdf(pdf_path, info):
             rs = util.find_chinese_currency(item)
             info['总金额_大写'] = rs
             info['总金额'] = util.chinese_to_numerals(rs)
-            info['税额'] = info['总金额'] - info['金额_']
+            info['税额'] = info['总金额'] - info['发票金额']
