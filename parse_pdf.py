@@ -12,7 +12,7 @@ def parse_pdf(pdf_path, info):
         # '贰拾肆圆零柒分 ¥24.07'
         if util.contains_chinese_currency(item):
             rs = util.find_chinese_currency(item)
-            item['总金额_大写'] = rs
-            item['总金额'] = util.chinese2digits(rs)
+            info['总金额_大写'] = rs
+            info['总金额'] = ''
 
 

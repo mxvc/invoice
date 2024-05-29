@@ -2,6 +2,7 @@ import os
 import re
 from datetime import datetime
 
+import cn2an
 import fitz  # PyMuPDF
 import pdfplumber
 import re
@@ -54,10 +55,12 @@ def now_str():
     print("date and time:", date_time)
     return date_time
 
+
 # 是否中文大写金额
 def is_chinese_currency(text):
     pattern = re.compile(r"^(?:[零壹贰叁肆伍陆柒捌玖]|\d)+(?:[元角分])+$")
     return bool(pattern.match(text))
+
 
 def contains_chinese_currency(text):
     pattern = re.compile(r"(?:[零壹贰叁肆伍陆柒捌玖]|\d)+(?:[元角分])")
@@ -72,51 +75,35 @@ def find_chinese_currency(text):
 
     return rs
 
-chinese_num = {
-    u'〇': 0, u'零': 0,
-    u'一': 1, u'壹': 1,
-    u'二': 2, u'两': 2, u'贰': 2,
-    u'三': 3, u'叁': 3,
-    u'四': 4, u'肆': 4,
-    u'五': 5, u'伍': 5,
-    u'六': 6, u'陆': 6,
-    u'七': 7, u'柒': 7,
-    u'八': 8, u'捌': 8,
-    u'九': 9, u'玖': 9,
-    u'十': 10, u'拾': 10,
-    u'百': 100, u'佰': 100,
-    u'千': 1000, u'仟': 1000,
-    u'万': 10000, u'萬': 10000,
-    u'亿': 100000000, u'億': 100000000,
-}
 
+def parse_chinese_amount(amount_str):
+    """
+    将中文金额字符串转换为数字
+    """
+    # 中文数字到阿拉伯数字的映射
+    chinese_digits = {
+        '零': 0, '壹': 1, '贰': 2, '叁': 3, '肆': 4,
+        '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9
+    }
 
-def chinese2digits(value):
-    total = 0.00
-    # 基础单位
-    base_unit = 1
-    # 可变单位
-    dynamic_unit = 1
-    for i in range(len(value) - 1, -1, -1):
-        val = chinese_num.get(value[i])
-        # 表示单位
-        if val > 10:
-            if val > base_unit:
-                base_unit = val
-            else:
-                dynamic_unit = base_unit * val
-        # 10既可以做单位也可做数字
-        elif val == 10:
-            if i == 0:
-                if dynamic_unit > base_unit:
-                    total = total + dynamic_unit * val
-                else:
-                    total = total + base_unit * val
-            else:
-                dynamic_unit = base_unit * val
-        else:
-            if dynamic_unit > base_unit:
-                total = total + dynamic_unit * val
-            else:
-                total = total + base_unit * val
+    # 中文单位到阿拉伯单位的映射
+    chinese_units = {
+        '': 1, '十': 10, '百': 100, '千': 1000,
+        '万': 10000, '亿': 100000000
+    }
+
+    total = 0
+    unit = 1
+    for char in reversed(amount_str):
+        if char in chinese_digits:
+            total += chinese_digits[char] * unit
+        elif char in chinese_units:
+            unit *= chinese_units[char]
+        elif char == '点':
+            unit = 1
+
     return total
+
+
+
+
