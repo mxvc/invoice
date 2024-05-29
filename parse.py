@@ -1,4 +1,5 @@
 import os
+from decimal import Decimal
 
 import fitz  # PyMuPDF
 
@@ -50,7 +51,7 @@ def read_qr_code(img_path):
         "发票类型": res[1],  # 发票种类代码
         "发票代码": res[2],
         "发票号码": res[3],
-        "发票金额": res[4],
+        "发票金额": Decimal(res[4]),
         "开票日期": res[5],
         "校验码": res[6],
     }

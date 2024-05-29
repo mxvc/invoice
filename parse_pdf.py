@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import util
 from util import pdf_read_text
 
@@ -13,5 +15,5 @@ def parse_pdf(pdf_path, info):
         if util.contains_chinese_currency(item):
             rs = util.find_chinese_currency(item)
             info['总金额_大写'] = rs
-            info['总金额'] = util.chinese_to_numerals(rs)
-            info['税额'] = info['总金额'] - float(info['发票金额'])
+            info['总金额'] = Decimal(util.chinese_to_numerals(rs))
+            info['税额'] = info['总金额'] - info['发票金额']
