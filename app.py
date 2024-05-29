@@ -1,6 +1,7 @@
 import base64
 import json
 import time
+from decimal import Decimal
 
 from flask import Flask, request, render_template
 
@@ -33,17 +34,19 @@ def upload():
         parse_pdf.parse_pdf(pdf_path, info)
 
         info['文件名称'] = file.filename
+
+        # decimal 转 str, 否则json报错
+        info = {key: str(value) if isinstance(value, Decimal) else value for key, value in info.items()}
+
         list.append(info)
 
     print(list)
 
-
     return render_template("result.html",
                            list=list,
-                           cols = json.dumps(INV_KEYS,ensure_ascii=False),
+                           cols=json.dumps(INV_KEYS, ensure_ascii=False),
                            data=json.dumps(list, ensure_ascii=False)
                            )
-
 
 
 if __name__ == '__main__':
