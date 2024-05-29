@@ -1,11 +1,7 @@
-import os
 import re
 from datetime import datetime
 
-import cn2an
-import fitz  # PyMuPDF
 import pdfplumber
-import re
 
 
 def find_first_num(text):
