@@ -4,7 +4,7 @@ import cv2  # opencv包
 import fitz  # PyMuPDF
 import requests
 import ssl
-from urllib.request import urlopen
+ssl._create_default_https_context = ssl._create_unverified_context
 
 import consts
 
@@ -74,10 +74,11 @@ def parse_shenzhen(url):
     # 发送请求
     response = requests.get(url)
 
-    print(response)
+    print(response.text)
     return {"sys_msg": "深圳发票解析"}
 
 
 if __name__ == '__main__':
     url = "https://bcfp.shenzhen.chinatax.gov.cn/verify/scan?hash=01645d47765dd7aec052188019747d2b9ff4a734a5a7c45ffec86832c070910a19&bill_num=09826096&total_amount=96200"
+ #   url = "https://www.baidu.com"
     parse_shenzhen(url)

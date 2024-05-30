@@ -9,11 +9,16 @@
 <div align="center">
     <h3>发票解析工具</h3>
 
+
     <form action="upload" method="post" enctype="multipart/form-data">
         <input name="files" type="file" multiple  accept=".pdf"/>
         <button>解析</button>
     </form>
 
+
+    <footer style="margin-top: 100px">
+        python_version: {{ python_version }}
+    </footer>
 
 </div>
 

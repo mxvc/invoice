@@ -1,5 +1,6 @@
 import base64
 import json
+import sys
 import time
 from decimal import Decimal
 
@@ -42,10 +43,13 @@ def upload():
 
     print(list)
 
+    python_version = sys.version
+
     return render_template("result.html",
                            list=list,
                            cols=json.dumps(INV_KEYS, ensure_ascii=False),
-                           data=json.dumps(list, ensure_ascii=False)
+                           data=json.dumps(list, ensure_ascii=False),
+                           python_version=python_version
                            )
 
 
