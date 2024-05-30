@@ -3,7 +3,8 @@ from decimal import Decimal
 import cv2  # opencv包
 import fitz  # PyMuPDF
 import requests
-
+import ssl
+from urllib.request import urlopen
 
 import consts
 
@@ -27,7 +28,6 @@ def pdf_to_img(file_path):
     return temp_img_path
 
 
-
 def read_qr_code(img_path):
     """
     读取图片中的二维码
@@ -39,10 +39,10 @@ def read_qr_code(img_path):
     detector = cv2.wechat_qrcode_WeChatQRCode()  # 微信贡献的代码，很好用
     img = cv2.imread(img_path)
     if img is None:
-        return None  # 没有二维码
+        return {"sys_msg": '没有二维码'}  # 没有二维码
     res, _ = detector.detectAndDecode(img)
     if res is None or len(res) == 0:
-        return None
+        return {"sys_msg”:“解析二维码为空"}
 
     # 深圳电子发票
     if res[0].startswith("https://bcfp.shenzhen.chinatax.gov.cn"):
@@ -63,14 +63,25 @@ def read_qr_code(img_path):
         "校验码": res[6],
     }
 
-    info['发票类型_中文'] = consts.INV_TYPE_DICT.get( info['发票类型'])
+    info['发票类型_中文'] = consts.INV_TYPE_DICT.get(info['发票类型'])
 
     return info
 
 
-
 def parse_shenzhen(url):
+    print(requests.__version__)
+    headers = {'Connection': 'close'}
 
-    response = requests.get(url,verify=False)
-    print(response.text)
-    return {}
+    ctx = ssl.create_default_context()
+    ctx.set_ciphers('DEFAULT')
+
+    # 发送请求
+    response = requests.get(url, context=ctx, headers=headers)
+
+    print(response)
+    return {"sys_msg": "深圳发票解析"}
+
+
+if __name__ == '__main__':
+    url = "https://bcfp.shenzhen.chinatax.gov.cn/verify/scan?hash=01645d47765dd7aec052188019747d2b9ff4a734a5a7c45ffec86832c070910a19&bill_num=09826096&total_amount=96200"
+    parse_shenzhen(url)
