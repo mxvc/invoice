@@ -44,6 +44,7 @@ def upload():
     print(list)
 
     python_version = sys.version
+    print("python 版本", python_version)
 
     return render_template("result.html",
                            list=list,
