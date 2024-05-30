@@ -69,14 +69,10 @@ def read_qr_code(img_path):
 
 
 def parse_shenzhen(url):
-    print(requests.__version__)
-    headers = {'Connection': 'close'}
-
-    ctx = ssl.create_default_context()
-    ctx.set_ciphers('DEFAULT')
+    print('requests版本', requests.__version__)
 
     # 发送请求
-    response = requests.get(url, context=ctx, headers=headers)
+    response = requests.get(url)
 
     print(response)
     return {"sys_msg": "深圳发票解析"}
