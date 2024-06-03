@@ -15,4 +15,5 @@ opencv-contrib-python-headless
 
 paddlepaddle
 paddleocr
+protobuf == 3.19.0
 
