@@ -7,22 +7,19 @@ import util
 from util import pdf_read_text
 
 
-def do_parse(pdf_path):
+def do_parse(pdf_path, info):
     img_path = util.pdf_to_img(pdf_path)
-    info = {}
 
     lines = pdf_read_text(pdf_path)
-    line = find_line(lines, '普通发票', '专用发票')
-    if line is not None:
+    line = find_line_or(lines, '普通发票', '专用发票')
+    if line is None:
+        info['状态'] = '获取发票类型错误'
+        return info
+    else:
         info['发票类型'] = line[4]
 
-    read_qr_code(img_path,info)
+    read_qr_code(img_path, info)
     os.remove(img_path)
-
-
-
-
-
 
     if info['发票类型'] == '深圳电子普通发票':
         parse_shenzhen(lines, info)
@@ -93,37 +90,31 @@ def parse_shenzhen(lines, info):
     info['开票日期'] = find_first_text_after_text(lines, '开票日期')
     info['校验码'] = find_first_text_after_text(lines, '校验码')
 
-    amt = find_first_text_after_text(lines, '计', False)
+    amt = find_first_text_after_text(lines, '计')
     amt = util.find_numbers(amt)
     if len(amt) > 0:
         info['发票金额'] = Decimal(amt[0])
     print(info)
 
 
-def find_line(lines, text, text2=None):
+def find_line(lines, text):
     for line in lines:
         if text in line[4]:
-            if text2 is None or text2 in line[4]:
-                return line
+            return line
 
     return None
 
 
-def find_same_line_after(lines, target):
-    x0, y0, x1, y1, text = target
-    text_center_y = y0 + (y1 - y0) / 2
-
-    rs = []
+def find_line_or(lines, text, text2):
     for line in lines:
-        _x0, _y0, _x1, _y1, _text = line
-        if _y0 < text_center_y < _y1 and _x0 > x1:
-            rs.append(line)
+        if text in line[4] or text2 in line[4]:
+            return line
 
-    return rs
+    return None
 
 
-def find_first_text_after_text(lines, text, use_contain=True):
-    target = find_line(lines, text, use_contain)
+def find_first_text_after_text(lines, text):
+    target = find_line(lines, text)
     if target is None:
         return None
     x0, y0, x1, y1, text = target

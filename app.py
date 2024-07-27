@@ -27,8 +27,14 @@ def upload():
         pdf_path = "uploads/" + str(time.time())
         file.save(pdf_path)
 
-        info = parse.do_parse(pdf_path)
-        info['文件名'] = file.filename
+        info = {'文件名': file.filename}
+
+        try:
+            parse.do_parse(pdf_path, info)
+        except Exception as e:
+            print(e)
+            info['状态'] = str(e)
+
 
         os.remove(pdf_path)
 
