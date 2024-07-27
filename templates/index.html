@@ -12,28 +12,20 @@
     <h3>电子发票解析</h3>
 
     <form action="upload" method="post" enctype="multipart/form-data">
-        <input name="files" type="file" multiple  accept=".pdf"/>
+        <input name="files" type="file" multiple accept=".pdf"/>
         <button>解析</button>
     </form>
 
-    <footer style="position:absolute;left: 0; right: 0; bottom: 50px;text-align: center">
-        <ul>
-            <li>
-                <a href="https://zzutil.com">猪猪工具网站</a>
-            </li>
-            <li>
-                python_version: {{ python_version }}
+    <footer style="position:absolute;left: 0; right: 0; bottom: 10px;text-align: center">
+        <p>
+            <a href="https://zzutil.com">猪猪工具网站</a>
 
-            </li>
-        </ul>
+        </p>
+        <p> python_version: {{ python_version }}</p>
 
     </footer>
 
 </div>
-
-
-
-
 
 
 </body>

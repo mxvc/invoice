@@ -20,9 +20,6 @@ def do_parse(pdf_path):
     return info
 
 
-
-
-
 def read_qr_code(img_path):
     """
     读取图片中的二维码
@@ -71,13 +68,18 @@ def parse_pdf(pdf_path, info):
 
     for item in arr:
         # '贰拾肆圆零柒分 ¥24.07'
-        if util.contains_chinese_currency(item):
-            print('大写：', item)
-            rs = util.find_chinese_currency(item)
-            info['价税合计_大写'] = rs
-            info['价税合计'] = Decimal(util.chinese_to_numerals(rs))
-            info['税额'] = info['价税合计'] - info['发票金额']
-
+        chinese_currency = util.contains_chinese_currency(item)
+        if chinese_currency:
+            print("解析到中文大写:", item)
+            arr = item.split(' ')
+            print('空格分割', len(arr))
+            for a in arr:
+                rs = util.find_chinese_currency(a)
+                if rs:
+                    info['价税合计_大写'] = rs
+                    info['价税合计'] = Decimal(util.chinese_to_numerals(rs))
+                    info['税额'] = info['价税合计'] - info['发票金额']
+                    break
 
 
 def parse_shenzhen(url):
@@ -92,5 +94,5 @@ def parse_shenzhen(url):
 
 if __name__ == '__main__':
     url = "https://bcfp.shenzhen.chinatax.gov.cn/verify/scan?hash=01645d47765dd7aec052188019747d2b9ff4a734a5a7c45ffec86832c070910a19&bill_num=09826096&total_amount=96200"
- #   url = "https://www.baidu.com"
+    #   url = "https://www.baidu.com"
     parse_shenzhen(url)

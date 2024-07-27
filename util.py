@@ -3,6 +3,8 @@ from datetime import datetime
 
 import pdfplumber
 import fitz  # PyMuPDF
+
+
 def pdf_to_img(file_path):
     # 打开PDF文件
     pdf_document = fitz.open(file_path)
@@ -20,6 +22,7 @@ def pdf_to_img(file_path):
     pdf_document.close()
 
     return temp_img_path
+
 
 def find_first_num(text):
     match = re.search(r'\d+(\.\d+)?', text)
@@ -83,10 +86,16 @@ def contains_chinese_currency(text):
 def find_chinese_currency(text):
     pattern = r'[\u4e00-\u9fa5]+'
 
-    chinese_amount = re.findall(pattern, text)
-    rs = chinese_amount[0] if chinese_amount else None
+    rs = re.findall(pattern, text)
+    if rs[0]:
+        rs = rs[0]
+    else:
+        return None
 
-    return rs
+    print("过滤中文大写：", rs)
+    if "元" in rs:
+        return rs
+    return None
 
 
 def chinese_to_numerals(chinese_str):
@@ -116,4 +125,3 @@ def chinese_to_numerals(chinese_str):
             temp *= 100000000
 
     return num
-
