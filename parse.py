@@ -1,10 +1,8 @@
 import os
-import re
 from decimal import Decimal
 
 import cv2  # opencv包
 
-import requests
 
 import util
 from util import pdf_read_text
@@ -72,6 +70,9 @@ def parse_total(pdf_path, info):
     lines = pdf_read_text(pdf_path)
 
     total_flag = find_line(lines, '价税合计',True)
+    if total_flag is None:
+        info['状态'] = '获取价税合计失败'
+        return
 
 
     x0, y0, x1, y1, text = total_flag
@@ -160,5 +161,3 @@ def find_first_text_after_text(lines, text):
             return _text
 
 
-def contains_pattern(text, pattern):
-    return re.search(pattern, text) is not None

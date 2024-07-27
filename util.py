@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 import fitz  # PyMuPDF
+import pdfplumber
 
 
 def pdf_to_img(file_path):
@@ -56,29 +57,21 @@ def find_second_num(text):
 
 
 def pdf_read_text(path):
-    pdf_document = fitz.open(path)
-
-    # 确保PDF文件有至少一页
-    page = pdf_document[0]
-
-    blocks = page.get_text("dict")["blocks"]
-
     rs = []
-    # 遍历文本块
-    for block in blocks:
-        if "lines" in block:  # 确保块包含文本行
-            for line in block["lines"]:
-                for span in line["spans"]:
-                    # 提取文本和坐标
-                    text = span["text"]
-                    x0, y0, x1, y1 = span["bbox"]
+    with pdfplumber.open(path) as pdf:
+        page = pdf.pages[0]
+        lines = page.extract_words()
+        for line in lines:
+            print(line)
+            rs.append([
+                line.get('x0'),
+                line.get('top'),
 
-                    # 打印文本和坐标
-                    print(f"Text: {text}, Coordinates: ({x0}, {y0}), ({x1}, {y1})")
-                    rs.append([x0, y0, x1, y1, text])
+                line.get('x1'),
+                line.get('bottom'),
+                line.get('text')
 
-    # 关闭PDF文件
-    pdf_document.close()
+            ])
 
     return rs
 
