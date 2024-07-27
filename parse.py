@@ -71,7 +71,7 @@ def parse_total(lines, info):
     for line in lines:
         _x0, _y0, _x1, _y1, _text = line
         if _y0 < text_center_y < _y1:
-            print('文字和价税合计在同一行', _text)
+            print('和价税合计在同一行:', _text)
             numbers = util.find_numbers(_text)
             if len(numbers) > 0:
                 n = numbers[0]
