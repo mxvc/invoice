@@ -15,9 +15,8 @@ app.json.ensure_ascii = False  # 解决中文乱码问题
 
 @app.route('/')
 def home():
-    ip = request.remote_addr
-    print('请求首页', ip)
-    return render_template("index.html")
+    python_version = sys.version
+    return render_template("index.html",          python_version=python_version)
 
 
 @app.route('/upload', methods=['POST'])
