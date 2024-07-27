@@ -4,7 +4,7 @@
 
 https://inv.zeabur.app
 
-截图
+解析结果
 
 ![截图](doc/img.png)
 
