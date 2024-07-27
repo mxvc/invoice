@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import time
 from decimal import Decimal
@@ -28,8 +29,12 @@ def upload():
         file.save(pdf_path)
 
         info = parse.do_parse(pdf_path)
+        info['文件名'] = file.filename
 
-        info['文件名称'] = file.filename
+
+        os.remove(pdf_path)
+
+
 
         # decimal 转 str, 否则json报错
         info = {key: str(value) if isinstance(value, Decimal) else value for key, value in info.items()}
