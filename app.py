@@ -7,7 +7,7 @@ from decimal import Decimal
 from flask import Flask, request, render_template
 
 import parse
-from consts import INV_KEYS
+from consts import TABLE_COLS
 
 app = Flask(__name__, static_url_path="")
 app.secret_key = 'zhrmghgws'
@@ -48,7 +48,7 @@ def upload():
 
     return render_template("result.html",
                            list=list,
-                           cols=json.dumps(INV_KEYS, ensure_ascii=False),
+                           cols=json.dumps(TABLE_COLS, ensure_ascii=False),
                            data=json.dumps(list, ensure_ascii=False),
                            python_version=python_version
                            )

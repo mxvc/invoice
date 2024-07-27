@@ -57,12 +57,31 @@ def find_second_num(text):
 
 
 def pdf_read_text(path):
-    text = ""
-    with pdfplumber.open(path) as pdf:
-        first_page = pdf.pages[0]
-        text = first_page.extract_text()
+    pdf_document = fitz.open(path)
 
-    return text
+    # 确保PDF文件有至少一页
+    page = pdf_document[0]
+
+    blocks = page.get_text("dict")["blocks"]
+
+    rs = []
+    # 遍历文本块
+    for block in blocks:
+        if "lines" in block:  # 确保块包含文本行
+            for line in block["lines"]:
+                for span in line["spans"]:
+                    # 提取文本和坐标
+                    text = span["text"]
+                    x0, y0, x1, y1 = span["bbox"]
+
+                    # 打印文本和坐标
+                   # print(f"Text: {text}, Coordinates: ({x0}, {y0}), ({x1}, {y1})")
+                    rs.append([x0, y0, x1, y1, text])
+
+    # 关闭PDF文件
+    pdf_document.close()
+
+    return rs
 
 
 def now_str():
@@ -125,3 +144,16 @@ def chinese_to_numerals(chinese_str):
             temp *= 100000000
 
     return num
+
+def is_number(text):
+    try:
+        number = float(text)
+        print("The text is a float.")
+    except ValueError:
+        print("The text is not a number.")
+        return False
+    return  True
+def find_numbers(text):
+    # 正则表达式匹配整数和小数
+    pattern = r'\d+\.\d+'
+    return re.findall(pattern, text)

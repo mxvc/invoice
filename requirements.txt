@@ -10,6 +10,5 @@ opencv-python-headless
 opencv-contrib-python-headless
 
 
-
-requests
-pdfplumber
+requests~=2.32.3
+pdfplumber~=0.11.2
