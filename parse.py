@@ -71,7 +71,8 @@ def parse_total(pdf_path, info):
     print('开始解析' + pdf_path)
     lines = pdf_read_text(pdf_path)
 
-    total_flag = find_line(lines, '价税合计')
+    total_flag = find_line(lines, '价税合计',True)
+
 
     x0, y0, x1, y1, text = total_flag
     text_center_y = y0 + (y1 - y0) / 2
@@ -107,10 +108,14 @@ def parse_shenzhen(path, info):
     print(info)
 
 
-def find_line(lines, text1):
+def find_line(lines, text, use_contains=False):
     for line in lines:
-        if line[4] == text1:
-            return line
+        if use_contains:
+            if text in line[4]:
+                return line
+        else:
+            if line[4] == text:
+                return line
 
     return None;
 
@@ -157,5 +162,3 @@ def find_first_text_after_text(lines, text):
 
 def contains_pattern(text, pattern):
     return re.search(pattern, text) is not None
-
-

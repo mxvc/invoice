@@ -74,7 +74,7 @@ def pdf_read_text(path):
                     x0, y0, x1, y1 = span["bbox"]
 
                     # 打印文本和坐标
-                   # print(f"Text: {text}, Coordinates: ({x0}, {y0}), ({x1}, {y1})")
+                    print(f"Text: {text}, Coordinates: ({x0}, {y0}), ({x1}, {y1})")
                     rs.append([x0, y0, x1, y1, text])
 
     # 关闭PDF文件
