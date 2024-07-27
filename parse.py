@@ -6,31 +6,33 @@ import cv2  # opencv包
 import util
 from util import pdf_read_text
 
-import consts
-
 
 def do_parse(pdf_path):
     img_path = util.pdf_to_img(pdf_path)
-    info = read_qr_code(img_path)
-    os.remove(img_path)
+    info = {}
 
     lines = pdf_read_text(pdf_path)
+    line = find_line(lines, '普通发票', '专用发票')
+    if line is not None:
+        info['发票类型'] = line[4]
 
-    if info['发票类型'] == '区块链电子发票':
+    read_qr_code(img_path,info)
+    os.remove(img_path)
+
+
+
+
+
+
+    if info['发票类型'] == '深圳电子普通发票':
         parse_shenzhen(lines, info)
 
     parse_total(lines, info)
 
-    info['发票类型_中文'] = consts.INV_TYPE_DICT.get(info['发票类型'])
-    if info['发票类型_中文'] is None:
-        line = find_line(lines, '发票')
-        if line is not None:
-            info['发票类型_中文'] = line[4]
-
     return info
 
 
-def read_qr_code(img_path):
+def read_qr_code(img_path, info):
     """
     读取图片中的二维码
     :param img_path:图片路径
@@ -48,26 +50,16 @@ def read_qr_code(img_path):
 
     # 深圳电子发票
     if res[0].startswith("https://bcfp.shenzhen.chinatax.gov.cn"):
-        url = res[0]
-        print(url)
-
-        return {
-            "发票类型": "区块链电子发票",
-        }
+        return
 
     res = res[0].split(',')
     if res[0] != '01':  # 第1个属性值，固定01
         raise ValueError("发票二维码第一个应该是固定01")
-    info = {
-        "发票类型": res[1],  # 发票种类代码
-        "发票代码": res[2],
-        "发票号码": res[3],
-        "发票金额": Decimal(res[4]),
-        "开票日期": res[5],
-        "校验码": res[6],
-    }
-
-    return info
+    info["发票代码"] = res[2]
+    info["发票号码"] = res[3]
+    info["发票金额"] = Decimal(res[4])
+    info["开票日期"] = res[5]
+    info["校验码"] = res[6]
 
 
 def parse_total(lines, info):
@@ -87,7 +79,7 @@ def parse_total(lines, info):
             if len(numbers) > 0:
                 n = numbers[0]
                 info['价税合计'] = Decimal(n)
-                if info['发票金额']:
+                if '发票金额' in info:
                     info['税额'] = info['价税合计'] - info['发票金额']
                     info['税率'] = round(info['税额'] / info['发票金额'], 2)
                 break
@@ -108,13 +100,10 @@ def parse_shenzhen(lines, info):
     print(info)
 
 
-def find_line(lines, text, use_contains=True):
+def find_line(lines, text, text2=None):
     for line in lines:
-        if use_contains:
-            if text in line[4]:
-                return line
-        else:
-            if line[4] == text:
+        if text in line[4]:
+            if text2 is None or text2 in line[4]:
                 return line
 
     return None

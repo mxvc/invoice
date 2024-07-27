@@ -7,7 +7,6 @@ from decimal import Decimal
 from flask import Flask, request, render_template
 
 import parse
-from consts import TABLE_COLS
 
 app = Flask(__name__, static_url_path="")
 app.secret_key = 'zhrmghgws'
@@ -43,9 +42,15 @@ def upload():
     python_version = sys.version
     print("python 版本", python_version)
 
+    cols = ("文件名",
+            "发票类型",
+            "发票代码", "发票号码", "发票金额", "开票日期", "校验码",
+            "税额", "价税合计", "税率",
+            "状态")
+
     return render_template("result.html",
                            list=rs,
-                           cols=json.dumps(TABLE_COLS, ensure_ascii=False),
+                           cols=json.dumps(cols, ensure_ascii=False),
                            data=json.dumps(rs, ensure_ascii=False),
                            python_version=python_version
                            )
