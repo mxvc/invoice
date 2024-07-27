@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 import cv2  # opencv包
-import fitz  # PyMuPDF
+
 import requests
 import ssl
 
@@ -20,23 +20,7 @@ def do_parse(pdf_path):
     return info;
 
 
-def pdf_to_img(file_path):
-    # 打开PDF文件
-    pdf_document = fitz.open(file_path)
 
-    page = pdf_document[0]
-
-    rotate = int(0)
-    zoom_x = 1.33333333
-    zoom_y = 1.33333333
-    mat = fitz.Matrix(zoom_x, zoom_y)
-    mat = mat.prerotate(rotate)
-    pix = page.get_pixmap(matrix=mat, alpha=False)
-    temp_img_path = file_path + '.temp.png'
-    pix.save(temp_img_path)
-    pdf_document.close()
-
-    return temp_img_path
 
 
 def read_qr_code(img_path):
