@@ -141,8 +141,6 @@ def find_first_text_after_text(lines, text, use_contain=True):
     text_center_x = x0 + (x1 - x0) /2
 
     for line in lines:
-        if '144032309110' in line[4]:
-            print('ok')
         _x0, _y0, _x1, _y1, _text = line
         if _y0 < text_center_y < _y1 and _x0 > text_center_x:
             return _text
