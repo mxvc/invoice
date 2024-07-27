@@ -118,7 +118,7 @@ def find_line(lines, text, use_contains=False):
             if line[4] == text:
                 return line
 
-    return None;
+    return None
 
 
 def find_same_line_after(lines, target):
