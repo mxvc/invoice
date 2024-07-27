@@ -1,7 +1,6 @@
 import re
 from datetime import datetime
 
-import pdfplumber
 import fitz  # PyMuPDF
 
 
@@ -153,6 +152,7 @@ def is_number(text):
         print("The text is not a number.")
         return False
     return  True
+
 def find_numbers(text):
     # 正则表达式匹配整数和小数
     pattern = r'\d+\.\d+'

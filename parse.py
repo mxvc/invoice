@@ -1,4 +1,5 @@
 import os
+import re
 from decimal import Decimal
 
 import cv2  # opencv包
@@ -8,17 +9,21 @@ import requests
 import util
 from util import pdf_read_text
 
-
 import consts
 
 
 def do_parse(pdf_path):
     img_path = util.pdf_to_img(pdf_path)
     info = read_qr_code(img_path)
-
     os.remove(img_path)
 
-    parse_pdf(pdf_path, info)
+    if info['发票类型'] == '区块链电子发票':
+        parse_shenzhen(pdf_path, info)
+
+    parse_total(pdf_path, info)
+
+    info['发票类型_中文'] = consts.INV_TYPE_DICT.get(info['发票类型'])
+
     return info
 
 
@@ -43,7 +48,9 @@ def read_qr_code(img_path):
         url = res[0]
         print(url)
 
-        return parse_shenzhen(url)
+        return {
+            "发票类型": "区块链电子发票"
+        }
 
     res = res[0].split(',')
     if res[0] != '01':  # 第1个属性值，固定01
@@ -57,20 +64,14 @@ def read_qr_code(img_path):
         "校验码": res[6],
     }
 
-    info['发票类型_中文'] = consts.INV_TYPE_DICT.get(info['发票类型'])
-
     return info
 
 
-def parse_pdf(pdf_path, info):
+def parse_total(pdf_path, info):
     print('开始解析' + pdf_path)
-    print(info)
     lines = pdf_read_text(pdf_path)
 
-    total_flag = None
-    for line in lines:
-        if '价税合计' in line[4]:
-            total_flag = line
+    total_flag = find_line(lines, '价税合计')
 
     x0, y0, x1, y1, text = total_flag
     text_center_y = y0 + (y1 - y0) / 2
@@ -83,21 +84,78 @@ def parse_pdf(pdf_path, info):
             if len(numbers) > 0:
                 n = numbers[0]
                 info['价税合计'] = Decimal(n)
-                info['税额'] = info['价税合计'] - info['发票金额']
-                info['税率'] = round( info['税额'] / info['发票金额'], 2)
+                if info['发票金额']:
+                    info['税额'] = info['价税合计'] - info['发票金额']
+                    info['税率'] = round(info['税额'] / info['发票金额'], 2)
                 break
 
 
-def parse_shenzhen(url):
-    # 发送请求
-    response = requests.get(url, verify=False)
+def parse_shenzhen(path, info):
+    print('开始解析深圳发票')
+    lines = pdf_read_text(path)
+    for line in lines:
+        print(line)
+    info['发票代码'] = find_first_text_after_text(lines, '发票代码')
+    info['发票号码'] = find_first_text_after_text(lines, '发票号码')
+    info['开票日期'] = find_first_text_after_text(lines, '开票日期')
+    info['校验码'] = find_first_text_after_text(lines, '校验码')
 
-    print(response.text)
-    return {"sys_msg": "深圳发票解析"}
+    amt = find_first_text_after_text(lines, '计')
+    amt = util.find_numbers(amt)
+    if len(amt) > 0:
+        info['发票金额'] = Decimal(amt[0])
+    print(info)
 
 
-if __name__ == '__main__':
-    url = "https://bcfp.shenzhen.chinatax.gov.cn/verify/scan?hash=01645d47765dd7aec052188019747d2b9ff4a734a5a7c45ffec86832c070910a19&bill_num=09826096&total_amount=96200"
-    #   url = "https://www.baidu.com"
+def find_line(lines, text1):
+    for line in lines:
+        if line[4] == text1:
+            return line
 
-    requests.get(url, verify=False)
+    return None;
+
+
+def find_same_line_after(lines, target):
+    x0, y0, x1, y1, text = target
+    text_center_y = y0 + (y1 - y0) / 2
+
+    rs = []
+    for line in lines:
+        _x0, _y0, _x1, _y1, _text = line
+        if _y0 < text_center_y < _y1 and _x0 > x1:
+            rs.append(line)
+
+    return rs
+
+
+def find_same_line_after_text(lines, text):
+    target = find_line(lines, text)
+    x0, y0, x1, y1, text = target
+    text_center_y = y0 + (y1 - y0) / 2
+
+    list = []
+    for line in lines:
+        _x0, _y0, _x1, _y1, _text = line
+        if _y0 < text_center_y < _y1 and _x0 > x1:
+            list.append(line)
+
+    return list
+
+
+def find_first_text_after_text(lines, text):
+    target = find_line(lines, text)
+    if target is None:
+        return None
+    x0, y0, x1, y1, text = target
+    text_center_y = y0 + (y1 - y0) / 2
+
+    for line in lines:
+        _x0, _y0, _x1, _y1, _text = line
+        if _y0 < text_center_y < _y1 and _x0 > x1:
+            return _text
+
+
+def contains_pattern(text, pattern):
+    return re.search(pattern, text) is not None
+
+
