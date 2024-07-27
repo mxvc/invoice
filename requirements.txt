@@ -4,11 +4,10 @@ openpyxl
 
 PyMuPDF
 
-
-# opencv 二维码识别
-# 服务器模式，没有界面
+# qrcode
 opencv-python-headless
 opencv-contrib-python-headless
 
 
 
+requests

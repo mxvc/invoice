@@ -4,9 +4,20 @@ import cv2  # opencv包
 import fitz  # PyMuPDF
 import requests
 import ssl
+
+import util
+from util import pdf_read_text
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 import consts
+
+
+def do_parse(pdf_path):
+    img_path = pdf_to_img(pdf_path)
+    info = read_qr_code(img_path)
+    parse_pdf(pdf_path, info)
+    return info;
 
 
 def pdf_to_img(file_path):
@@ -66,6 +77,22 @@ def read_qr_code(img_path):
     info['发票类型_中文'] = consts.INV_TYPE_DICT.get(info['发票类型'])
 
     return info
+
+
+def parse_pdf(pdf_path, info):
+    print('开始解析' + pdf_path)
+    print(info)
+    text = pdf_read_text(pdf_path)
+    arr = text.split('\n')
+
+    for item in arr:
+        # '贰拾肆圆零柒分 ¥24.07'
+        if util.contains_chinese_currency(item):
+            rs = util.find_chinese_currency(item)
+            info['价税合计_大写'] = rs
+            info['价税合计'] = Decimal(util.chinese_to_numerals(rs))
+            info['税额'] = info['价税合计'] - info['发票金额']
+
 
 
 def parse_shenzhen(url):

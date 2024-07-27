@@ -6,7 +6,6 @@ from decimal import Decimal
 from flask import Flask, request, render_template
 
 import parse
-import parse_pdf
 from consts import INV_KEYS
 
 app = Flask(__name__, static_url_path="")
@@ -29,9 +28,7 @@ def upload():
         pdf_path = "uploads/" + str(time.time())
         file.save(pdf_path)
 
-        file_path = parse.pdf_to_img(pdf_path)
-        info = parse.read_qr_code(file_path)
-        parse_pdf.parse_pdf(pdf_path, info)
+        info = parse.do_parse(pdf_path)
 
         info['文件名称'] = file.filename
 
