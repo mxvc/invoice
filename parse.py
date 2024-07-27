@@ -5,13 +5,13 @@ from decimal import Decimal
 import cv2  # opencv包
 
 import util
-from util import pdf_read_text
+from util import pdf_read_text, pdf_read_text_simple
 
 
 def do_parse(pdf_path, info):
     img_path = util.pdf_to_img(pdf_path)
 
-    lines = pdf_read_text(pdf_path)
+    lines, simple_lines = pdf_read_text(pdf_path)
     line = find_line_or(lines, '普通发票', '专用发票')
     if line is None:
         info['状态'] = '获取发票类型错误'
@@ -23,7 +23,7 @@ def do_parse(pdf_path, info):
     os.remove(img_path)
 
     if info['发票标题'] == '深圳电子普通发票':
-        parse_shenzhen(lines, info)
+        parse_shenzhen(lines, simple_lines, info)
 
     parse_total(lines, info)
 
@@ -83,19 +83,20 @@ def parse_total(lines, info):
                 break
 
 
-def parse_shenzhen(lines, info):
+def parse_shenzhen(lines, simple_lines, info):
     print('开始解析深圳发票')
 
-    info['发票代码'] = find_value(lines, '发票代码')
-    info['发票号码'] = find_value(lines, '发票号码')
-    info['开票日期'] = find_value(lines, '开票日期')
-    info['校验码'] = find_value(lines, '校验码')
+    info['发票代码'] = simple_find_value(simple_lines, '发票代码')
+    info['发票号码'] = simple_find_value(simple_lines, '发票号码')
+    info['开票日期'] = simple_find_value(simple_lines, '开票日期')
+    info['校验码'] = simple_find_value(simple_lines, '校验码')
 
-    amt = find_first_text_after_text(lines, '计')
-    amt = util.find_numbers(amt)
-    if len(amt) > 0:
-        info['发票金额'] = Decimal(amt[0])
-    print(info)
+    # 发票金额
+    line = [s for s in simple_lines if s.startswith("合计")][0]
+    if line is not None:
+        nums = util.find_numbers(line)
+        if len(nums) > 0:
+            info['发票金额'] = Decimal(nums[0])
 
 
 def find_line(lines, text):
@@ -139,3 +140,14 @@ def find_value(lines, text):
                 return v
 
     return find_first_text_after_text(lines, text)
+
+
+def simple_find_value(simple_lines, key):
+    for line in simple_lines:
+
+        arr = re.split(r'[:：]', line)
+        if len(arr) == 2:
+            k = arr[0]
+            v = arr[1]
+            if v and k == key:
+                return v

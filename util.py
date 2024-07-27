@@ -60,19 +60,31 @@ def pdf_read_text(path):
     with pdfplumber.open(path) as pdf:
         page = pdf.pages[0]
         lines = page.extract_words()
+        simple = page.extract_text_simple()
+        simple = simple.replace(' ', '')
+        print(simple)
+        simple = simple.split('\n')
+
+
         for line in lines:
             item = [
-                line.get('x0'),
-                line.get('top'),
-                line.get('x1'),
-                line.get('bottom'),
+                int(line.get('x0')),
+                int(line.get('top')),
+                int(line.get('x1')),
+                int(line.get('bottom')),
                 line.get('text')
             ]
             print(item)
             rs.append(item)
 
-    return rs
+    return rs,simple
 
+def pdf_read_text_simple(path):
+    with pdfplumber.open(path) as pdf:
+        page = pdf.pages[0]
+
+
+    return rs
 
 def is_number(text):
     try:
