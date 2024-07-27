@@ -7,6 +7,13 @@ https://inv.zeabur.app
 
 
 # 开发笔记
+
+## 原理
+主要是解析发票二维码，得到大部分信息，但缺少总金额
+
+总金额的获取，我发现大部分发票必然有中文大写，则通过正则表达式找到大写金额，然后转换为小写
+
+
 ## 发票版式
 https://inv-veri.chinatax.gov.cn/fpcs/fpbs.html
 
