@@ -14,10 +14,10 @@ import consts
 
 
 def do_parse(pdf_path):
-    img_path = pdf_to_img(pdf_path)
+    img_path = util.pdf_to_img(pdf_path)
     info = read_qr_code(img_path)
     parse_pdf(pdf_path, info)
-    return info;
+    return info
 
 
 
