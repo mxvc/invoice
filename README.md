@@ -6,7 +6,7 @@ https://inv.zeabur.app
 
 
 
-# 一些知识
+# 开发笔记
 ## 发票版式
 https://inv-veri.chinatax.gov.cn/fpcs/fpbs.html
 
