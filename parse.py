@@ -14,12 +14,18 @@ def do_parse(pdf_path):
     info = read_qr_code(img_path)
     os.remove(img_path)
 
-    if info['发票类型'] == '区块链电子发票':
-        parse_shenzhen(pdf_path, info)
+    lines = pdf_read_text(pdf_path)
 
-    parse_total(pdf_path, info)
+    if info['发票类型'] == '区块链电子发票':
+        parse_shenzhen(lines, info)
+
+    parse_total(lines, info)
 
     info['发票类型_中文'] = consts.INV_TYPE_DICT.get(info['发票类型'])
+    if info['发票类型_中文'] is None:
+        line = find_line(lines, '发票')
+        if line is not None:
+            info['发票类型_中文'] = line[4]
 
     return info
 
@@ -46,7 +52,7 @@ def read_qr_code(img_path):
         print(url)
 
         return {
-            "发票类型": "区块链电子发票"
+            "发票类型": "区块链电子发票",
         }
 
     res = res[0].split(',')
@@ -64,10 +70,7 @@ def read_qr_code(img_path):
     return info
 
 
-def parse_total(pdf_path, info):
-    print('开始解析' + pdf_path)
-    lines = pdf_read_text(pdf_path)
-
+def parse_total(lines, info):
     total_flag = find_line(lines, '价税合计')
     if total_flag is None:
         info['状态'] = '获取价税合计失败'
@@ -90,11 +93,9 @@ def parse_total(pdf_path, info):
                 break
 
 
-def parse_shenzhen(path, info):
+def parse_shenzhen(lines, info):
     print('开始解析深圳发票')
-    lines = pdf_read_text(path)
-    for line in lines:
-        print(line)
+
     info['发票代码'] = find_first_text_after_text(lines, '发票代码')
     info['发票号码'] = find_first_text_after_text(lines, '发票号码')
     info['开票日期'] = find_first_text_after_text(lines, '开票日期')
@@ -138,7 +139,7 @@ def find_first_text_after_text(lines, text, use_contain=True):
         return None
     x0, y0, x1, y1, text = target
     text_center_y = y0 + (y1 - y0) / 2
-    text_center_x = x0 + (x1 - x0) /2
+    text_center_x = x0 + (x1 - x0) / 2
 
     for line in lines:
         _x0, _y0, _x1, _y1, _text = line

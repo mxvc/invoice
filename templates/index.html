@@ -5,34 +5,24 @@
     <title>发票解析工具</title>
     <meta name="keywords" content="电子发票，发票解析，发票识别，发票转表格，发票转excel">
     <meta name="description" content="在线发票解析识别工具">
-    <link href="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.5.0/semantic.min.css" rel="stylesheet"
-          crossorigin="anonymous">
 </head>
-<body>
+<body style="padding: 0 1rem">
 
-<div class="ui main container" style="margin-top:2rem">
-    <h3 class="ui header" style="margin-bottom:2rem">电子发票解析</h3>
+<h1 style="margin-bottom:2rem">电子发票解析</h1>
 
-    <form class="ui form" action="upload" method="post" enctype="multipart/form-data">
-        <div class="field">
-            <label>选择文件</label>
+<form action="upload" method="post" enctype="multipart/form-data">
+    <input name="files" type="file" multiple accept=".pdf"/>
+    <button>解析</button>
+</form>
 
-            <input name="files" type="file" multiple accept=".pdf"/>
-        </div>
-        <button class="ui primary button">解析</button>
-    </form>
 
-    <footer style="position:absolute;left: 0; right: 0; bottom: 10px;text-align: center">
-        <p>
-            <a href="https://zzutil.com">猪猪工具网站</a>
+<footer style="position:absolute;left: 0; right: 0; bottom: 10px;text-align: center">
+    <p>
+        <a href="https://zzutil.com">猪猪工具网站</a>
 
-        </p>
-        <p> python_version: {{ python_version }}</p>
-
-    </footer>
-
-</div>
-
+    </p>
+    <p> python_version: {{ python_version }}</p>
+</footer>
 
 </body>
 </html>

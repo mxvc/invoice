@@ -7,18 +7,12 @@
             src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css"/>
 
-    <link href="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.5.0/semantic.min.css" rel="stylesheet"
-          crossorigin="anonymous">
 
 </head>
-<body>
+<body style="padding: 0 1rem">
 
-<div class="ui main  container" style="margin-top:2rem">
-    <h3 class="ui header" style="margin-bottom:2rem">发票解析结果</h3>
-
-    <div id="example"></div>
-</div>
-
+<h1 style="margin-bottom:2rem">发票解析结果</h1>
+<div id="example"></div>
 
 <script>
     const container = document.querySelector('#example');
@@ -37,6 +31,12 @@
     });
 </script>
 
+<footer style="position:absolute;left: 0; right: 0; bottom: 10px;text-align: center">
+    <p>
+        <a href="https://zzutil.com">猪猪工具网站</a>
 
+    </p>
+    <p> python_version: {{ python_version }}</p>
+</footer>
 </body>
 </html>
