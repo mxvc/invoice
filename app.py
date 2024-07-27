@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import time
+import traceback
 from decimal import Decimal
 
 from flask import Flask, request, render_template
@@ -32,9 +33,10 @@ def upload():
         try:
             parse.do_parse(pdf_path, info)
         except Exception as e:
-            print(e)
-            info['状态'] = str(e)
+            print('解析发票异常', e)
+            traceback.print_exc()
 
+            info['状态'] = str(e)
 
         os.remove(pdf_path)
 
@@ -50,7 +52,8 @@ def upload():
 
     cols = ("文件名",
             "发票标题",
-            "发票代码", "发票号码", "发票金额", "开票日期", "校验码",
+            "发票代码", "发票号码", "开票日期", "校验码",
+            "发票金额",
             "税额", "价税合计", "税率",
             "状态")
 

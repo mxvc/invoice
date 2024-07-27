@@ -1,4 +1,5 @@
 import os
+import re
 from decimal import Decimal
 
 import cv2  # opencv包
@@ -85,10 +86,10 @@ def parse_total(lines, info):
 def parse_shenzhen(lines, info):
     print('开始解析深圳发票')
 
-    info['发票代码'] = find_first_text_after_text(lines, '发票代码')
-    info['发票号码'] = find_first_text_after_text(lines, '发票号码')
-    info['开票日期'] = find_first_text_after_text(lines, '开票日期')
-    info['校验码'] = find_first_text_after_text(lines, '校验码')
+    info['发票代码'] = find_value(lines, '发票代码')
+    info['发票号码'] = find_value(lines, '发票号码')
+    info['开票日期'] = find_value(lines, '开票日期')
+    info['校验码'] = find_value(lines, '校验码')
 
     amt = find_first_text_after_text(lines, '计')
     amt = util.find_numbers(amt)
@@ -125,3 +126,16 @@ def find_first_text_after_text(lines, text):
         _x0, _y0, _x1, _y1, _text = line
         if _y0 < text_center_y < _y1 and _x0 > text_center_x:
             return _text
+
+
+def find_value(lines, text):
+    line = find_line(lines, text)
+    if line is not None:
+        txt = line[4]
+        arr = re.split(r'[:：]', txt)
+        if len(arr) == 2:
+            v = arr[1].strip()
+            if v:
+                return v
+
+    return find_first_text_after_text(lines, text)
