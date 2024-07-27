@@ -1,11 +1,8 @@
 # 说明
-电子发票解析工具
+电子发票解析工具，标准发票pdf格式
 
-- 电子发票，标准发票pdf格式
-- 图片格式（计划中）
 
-# 快速使用
-应用免费托管在zeabur上， 感谢。https://inv.zeabur.app
+https://inv.zeabur.app
 
 
 
