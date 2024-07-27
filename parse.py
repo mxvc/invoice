@@ -16,12 +16,12 @@ def do_parse(pdf_path, info):
         info['状态'] = '获取发票类型错误'
         return info
     else:
-        info['发票类型'] = line[4]
+        info['发票标题'] = line[4]
 
     read_qr_code(img_path, info)
     os.remove(img_path)
 
-    if info['发票类型'] == '深圳电子普通发票':
+    if info['发票标题'] == '深圳电子普通发票':
         parse_shenzhen(lines, info)
 
     parse_total(lines, info)
