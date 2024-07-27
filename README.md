@@ -2,8 +2,7 @@
 电子发票解析工具，标准发票pdf格式
 
 
-https://inv.zeabur.app
-
+https://fp.zzutil.com/
 解析结果
 
 ![截图](doc/img.png)
