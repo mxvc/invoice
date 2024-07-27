@@ -62,15 +62,12 @@ def pdf_read_text(path):
         page = pdf.pages[0]
         lines = page.extract_words()
         for line in lines:
-            print(line)
             rs.append([
                 line.get('x0'),
                 line.get('top'),
-
                 line.get('x1'),
                 line.get('bottom'),
                 line.get('text')
-
             ])
 
     return rs

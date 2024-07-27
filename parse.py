@@ -3,7 +3,6 @@ from decimal import Decimal
 
 import cv2  # opencv包
 
-
 import util
 from util import pdf_read_text
 
@@ -69,11 +68,10 @@ def parse_total(pdf_path, info):
     print('开始解析' + pdf_path)
     lines = pdf_read_text(pdf_path)
 
-    total_flag = find_line(lines, '价税合计',True)
+    total_flag = find_line(lines, '价税合计')
     if total_flag is None:
         info['状态'] = '获取价税合计失败'
         return
-
 
     x0, y0, x1, y1, text = total_flag
     text_center_y = y0 + (y1 - y0) / 2
@@ -102,14 +100,14 @@ def parse_shenzhen(path, info):
     info['开票日期'] = find_first_text_after_text(lines, '开票日期')
     info['校验码'] = find_first_text_after_text(lines, '校验码')
 
-    amt = find_first_text_after_text(lines, '计')
+    amt = find_first_text_after_text(lines, '计', False)
     amt = util.find_numbers(amt)
     if len(amt) > 0:
         info['发票金额'] = Decimal(amt[0])
     print(info)
 
 
-def find_line(lines, text, use_contains=False):
+def find_line(lines, text, use_contains=True):
     for line in lines:
         if use_contains:
             if text in line[4]:
@@ -134,30 +132,17 @@ def find_same_line_after(lines, target):
     return rs
 
 
-def find_same_line_after_text(lines, text):
-    target = find_line(lines, text)
-    x0, y0, x1, y1, text = target
-    text_center_y = y0 + (y1 - y0) / 2
-
-    list = []
-    for line in lines:
-        _x0, _y0, _x1, _y1, _text = line
-        if _y0 < text_center_y < _y1 and _x0 > x1:
-            list.append(line)
-
-    return list
-
-
-def find_first_text_after_text(lines, text):
-    target = find_line(lines, text)
+def find_first_text_after_text(lines, text, use_contain=True):
+    target = find_line(lines, text, use_contain)
     if target is None:
         return None
     x0, y0, x1, y1, text = target
     text_center_y = y0 + (y1 - y0) / 2
+    text_center_x = x0 + (x1 - x0) /2
 
     for line in lines:
+        if '144032309110' in line[4]:
+            print('ok')
         _x0, _y0, _x1, _y1, _text = line
-        if _y0 < text_center_y < _y1 and _x0 > x1:
+        if _y0 < text_center_y < _y1 and _x0 > text_center_x:
             return _text
-
-
