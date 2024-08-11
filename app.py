@@ -38,10 +38,12 @@ def upload():
 
             info['状态'] = str(e)
 
+        print("正在删除文件", pdf_path)
         os.remove(pdf_path)
 
         # decimal 转 str, 否则json报错
         info = {key: str(value) if isinstance(value, Decimal) else value for key, value in info.items()}
+        print("文件解析结果：", info)
 
         rs.append(info)
 
@@ -56,6 +58,8 @@ def upload():
             "发票金额",
             "税额", "价税合计", "税率",
             "状态")
+
+    print("开始渲染页面")
 
     return render_template("result.html",
                            list=rs,
